@@ -1,10 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&display=swap");
 
-:root {
-  --dark-color: #141414;
-  --light-color: #e3e3db;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -21,13 +16,13 @@ img {
   object-fit: cover;
 }
 
-.title {
+h1 {
   font-size: 7vw;
   font-weight: 800;
   line-height: 1;
 }
 
-.hero-header p {
+p {
   font-size: 1.5rem;
   font-weight: 400;
 }
@@ -35,14 +30,14 @@ img {
 section {
   position: relative;
   width: 100vw;
-  height: 100svh; /* svh is a good option for mobile  */
+  height: 100svh;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--dark-color);
-  color: var(--light-color);
-  /* overflow: hidden; */
+  background-color: #141414;
+  color: #e3e3db;
+  overflow: hidden;
 }
 
 .hero {
@@ -61,7 +56,6 @@ section {
   flex-direction: column;
   gap: 2rem;
   will-change: transform, opacity;
-  /* outline: 1px solid orange; */
 }
 
 .animated-icons {
@@ -86,11 +80,10 @@ section {
   position: relative;
   max-width: 1000px;
   text-align: center;
-  color: var(--light-color);
+  color: #141414;
   font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: 800;
-  line-height: 1;
-  /* outline: 1px solid orange; */
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 .text-segment {
@@ -105,7 +98,6 @@ section {
   vertical-align: middle;
   will-change: transform;
   visibility: hidden;
-  /* border: 1px solid red; */
 }
 
 @media (max-width: 1000px) {
