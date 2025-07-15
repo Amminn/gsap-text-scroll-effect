@@ -1,10 +1,13 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText"; // Import SplitText
 import Lenis from "lenis";
 
 document.addEventListener("DOMContentLoaded", () => {
-  gsap.registerPlugin(ScrollTrigger);
+  // Register GSAP plugins
+  gsap.registerPlugin(ScrollTrigger, SplitText);
 
+  // --- Lenis Smooth Scroll Setup (no changes) ---
   const lenis = new Lenis();
   lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add((time) => {
@@ -12,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   gsap.ticker.lagSmoothing(0);
 
+  // --- Element Selectors (no changes) ---
   const animatedIcons = document.querySelector(".animated-icons");
   const iconElements = document.querySelectorAll(".animated-icon");
   const textSegments = document.querySelectorAll(".text-segment");
@@ -19,18 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const heroHeader = document.querySelector(".hero-header");
   const heroSection = document.querySelector(".hero");
 
-  const textAnimationOrder = [];
-  textSegments.forEach((segment, index) => {
-    textAnimationOrder.push({ segment, originalIndex: index });
+  // --- NEW: Create SplitText instances for each text segment ---
+  // We split the text into characters and hide them initially.
+  const splitTexts = [];
+  textSegments.forEach((segment) => {
+    const split = new SplitText(segment, {
+      type: "words,chars", // Split by both words and characters
+      autoSplit: true, // Preserve natural line breaks and layout
+    });
+    splitTexts.push(split);
   });
-
-  for (let i = textAnimationOrder.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [textAnimationOrder[i], textAnimationOrder[j]] = [
-      textAnimationOrder[j],
-      textAnimationOrder[i],
-    ];
-  }
 
   const isMobile = window.innerWidth <= 1000;
   const headerIconSize = isMobile ? 30 : 60;
@@ -47,11 +49,16 @@ document.addEventListener("DOMContentLoaded", () => {
     onUpdate: (self) => {
       const progress = self.progress;
 
+      // Initially hide the text segments (will be revealed by character)
       textSegments.forEach((segment) => {
-        gsap.set(segment, { opacity: 0 });
+        gsap.set(segment, { opacity: 1 }); // Keep the container visible
+      });
+      splitTexts.forEach((split) => {
+        gsap.set(split.chars, { opacity: 0 }); // But hide the characters
       });
 
       if (progress <= 0.3) {
+        // --- This block remains unchanged ---
         const moveProgress = progress / 0.3;
         const containerMoveY = -window.innerHeight * 0.3 * moveProgress;
 
@@ -110,6 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         });
       } else if (progress <= 0.6) {
+        // --- This block remains unchanged ---
         const scaleProgress = (progress - 0.3) / 0.3;
 
         gsap.set(heroHeader, {
@@ -153,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
           gsap.set(icon, { x: 0, y: 0 });
         });
       } else if (progress <= 0.75) {
+        // --- This block remains unchanged ---
         const moveProgress = (progress - 0.6) / 0.15;
 
         gsap.set(heroHeader, {
@@ -238,13 +247,13 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
       } else {
+        // --- MODIFIED: This block handles the letter-by-letter animation ---
         gsap.set(heroHeader, {
           transform: `translate(-50%, calc(-50% + -100px))`,
           opacity: 0,
         });
 
         heroSection.style.backgroundColor = "#e3e3db";
-
         gsap.set(animatedIcons, { opacity: 0 });
 
         if (window.duplicateIcons) {
@@ -264,11 +273,26 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
 
-        // Change from textAnimationOrder (random) to textSegments (ordered)
-        textSegments.forEach((segment, index) => {
-          const segmentStart = 0.75 + index * 0.03;
-          const segmentEnd = segmentStart + 0.015;
+        // Define the progress range for the entire text animation
+        const textAnimationStartProgress = 0.75;
+        const textAnimationEndProgress = 1.0;
 
+        // Animate each segment one after the other
+        splitTexts.forEach((split, segmentIndex) => {
+          const chars = split.chars;
+          const numChars = chars.length;
+
+          // Calculate at what scroll progress this specific segment should start and end its animation
+          const segmentStart =
+            textAnimationStartProgress +
+            (segmentIndex / splitTexts.length) *
+              (textAnimationEndProgress - textAnimationStartProgress);
+          const segmentEnd =
+            textAnimationStartProgress +
+            ((segmentIndex + 1) / splitTexts.length) *
+              (textAnimationEndProgress - textAnimationStartProgress);
+
+          // Determine this segment's local progress based on the overall scroll progress
           const segmentProgress = gsap.utils.mapRange(
             segmentStart,
             segmentEnd,
@@ -276,10 +300,28 @@ document.addEventListener("DOMContentLoaded", () => {
             1,
             progress
           );
-          const clampedProgress = Math.max(0, Math.min(1, segmentProgress));
 
-          gsap.set(segment, {
-            opacity: clampedProgress,
+          // Animate characters within the current segment
+          chars.forEach((char, charIndex) => {
+            // Stagger the appearance of each character within the segment's animation time
+            const charStart = charIndex / numChars;
+            const charEnd = (charIndex + 1) / numChars;
+
+            // Map the segment's progress to the character's progress and fade it in
+            const charProgress = gsap.utils.mapRange(
+              charStart,
+              charEnd,
+              0,
+              1,
+              segmentProgress
+            );
+            const clampedCharProgress = Math.max(0, Math.min(1, charProgress));
+
+            // Opacity goes from 0.1 to 1 instead of 0 to 1
+            const minOpacity = 0.1;
+            const opacity = minOpacity + (1 - minOpacity) * clampedCharProgress;
+
+            gsap.set(char, { opacity });
           });
         });
       }
