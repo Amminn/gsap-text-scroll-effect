@@ -374,6 +374,8 @@ document.addEventListener("DOMContentLoaded", () => {
       start: "top top",
       end: `+=${window.innerHeight * 3}`,
       pinSpacing: true,
+      scrub: 1,
+      once: true,
       onUpdate: (self) => {
         const progress = self.progress;
         const words = Array.from(
