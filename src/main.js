@@ -372,7 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
       trigger: container,
       pin: container,
       start: "top top",
-      end: `+=${window.innerHeight * 4}`,
+      end: `+=${window.innerHeight * 3}`,
       pinSpacing: true,
       onUpdate: (self) => {
         const progress = self.progress;
@@ -383,8 +383,8 @@ document.addEventListener("DOMContentLoaded", () => {
         words.forEach((word, index) => {
           const wordText = word.querySelector("span");
 
-          if (progress <= 0.7) {
-            const progressTarget = 0.7;
+          if (progress <= 1) {
+            const progressTarget = 1;
             const revealProgress = Math.min(1, progress / progressTarget);
 
             const overlapWords = 15;
@@ -425,44 +425,45 @@ document.addEventListener("DOMContentLoaded", () => {
                   (1 - textRevealThreshold)
                 : 0;
             wordText.style.opacity = Math.pow(textRevealProgress, 0.5);
-          } else {
-            const reverseProgress = (progress - 0.7) / 0.3;
-            word.style.opacity = 1;
-            const targetTextOpacity = 1;
-
-            const reverseOverlapWords = 5;
-            const reverseWordStart = index / totalWords;
-            const reverseWordEnd =
-              reverseWordStart + reverseOverlapWords / totalWords;
-
-            const reverseTimelineScale =
-              1 /
-              Math.max(
-                1,
-                (totalWords - 1) / totalWords + reverseOverlapWords / totalWords
-              );
-
-            const reverseAdjustedStart =
-              reverseWordStart * reverseTimelineScale;
-            const reverseAdjustedEnd = reverseWordEnd * reverseTimelineScale;
-            const reverseDuration = reverseAdjustedEnd - reverseAdjustedStart;
-
-            const reverseWordProgress =
-              reverseProgress <= reverseAdjustedStart
-                ? 0
-                : reverseProgress >= reverseAdjustedEnd
-                ? 1
-                : (reverseProgress - reverseAdjustedStart) / reverseDuration;
-
-            if (reverseWordProgress > 0) {
-              wordText.style.opacity =
-                targetTextOpacity * (1 - reverseWordProgress);
-              word.style.backgroundColor = `rgba(${wordHighlightBgColor}, ${reverseWordProgress})`;
-            } else {
-              wordText.style.opacity = targetTextOpacity;
-              word.style.backgroundColor = `rgba(${wordHighlightBgColor}, 0)`;
-            }
           }
+          // else {
+          //   const reverseProgress = (progress - 0.7) / 0.3;
+          //   word.style.opacity = 1;
+          //   const targetTextOpacity = 1;
+
+          //   const reverseOverlapWords = 5;
+          //   const reverseWordStart = index / totalWords;
+          //   const reverseWordEnd =
+          //     reverseWordStart + reverseOverlapWords / totalWords;
+
+          //   const reverseTimelineScale =
+          //     1 /
+          //     Math.max(
+          //       1,
+          //       (totalWords - 1) / totalWords + reverseOverlapWords / totalWords
+          //     );
+
+          //   const reverseAdjustedStart =
+          //     reverseWordStart * reverseTimelineScale;
+          //   const reverseAdjustedEnd = reverseWordEnd * reverseTimelineScale;
+          //   const reverseDuration = reverseAdjustedEnd - reverseAdjustedStart;
+
+          //   const reverseWordProgress =
+          //     reverseProgress <= reverseAdjustedStart
+          //       ? 0
+          //       : reverseProgress >= reverseAdjustedEnd
+          //       ? 1
+          //       : (reverseProgress - reverseAdjustedStart) / reverseDuration;
+
+          //   if (reverseWordProgress > 0) {
+          //     wordText.style.opacity =
+          //       targetTextOpacity * (1 - reverseWordProgress);
+          //     word.style.backgroundColor = `rgba(${wordHighlightBgColor}, ${reverseWordProgress})`;
+          //   } else {
+          //     wordText.style.opacity = targetTextOpacity;
+          //     word.style.backgroundColor = `rgba(${wordHighlightBgColor}, 0)`;
+          //   }
+          // }
         });
       },
     });
