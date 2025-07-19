@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ScrollTrigger.create({
     trigger: ".hero",
     start: "top top",
-    end: `+=${window.innerHeight * 8}px`,
+    end: `+=${window.innerHeight * 6}px`,
     pin: true,
     pinSpacing: true,
     scrub: 1,
