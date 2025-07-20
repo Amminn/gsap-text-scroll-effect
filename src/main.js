@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ScrollTrigger.create({
     trigger: ".hero",
     start: "top top",
-    end: `+=${window.innerHeight * 6}px`,
+    end: `+=${window.innerHeight * 8}px`,
     pin: true,
     pinSpacing: true,
     scrub: 1,
@@ -372,10 +372,10 @@ document.addEventListener("DOMContentLoaded", () => {
       trigger: container,
       pin: container,
       start: "top top",
-      end: `+=${window.innerHeight * 3}`,
+      end: `+=${window.innerHeight * 4}`,
+      scrub: true,
       pinSpacing: true,
-      scrub: 1,
-      once: true,
+      // once: true,
       onUpdate: (self) => {
         const progress = self.progress;
         const words = Array.from(
@@ -467,6 +467,13 @@ document.addEventListener("DOMContentLoaded", () => {
           //   }
           // }
         });
+      },
+      onLeave(self) {
+        let scroll = lenis.scroll, //window.pageYOffset,
+          pinDistance = self.end - self.start;
+        self.kill(true, true);
+        // scrollText.progress(1); // reverted with the ScrollTrigger, but we should force the playhead to the end here.
+        lenis.scrollTo(scroll - pinDistance, { immediate: true });
       },
     });
   });
